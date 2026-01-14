@@ -1,15 +1,13 @@
-import Background from "./components/Background";
-import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Produk from "./components/Produk";
+import Pembayaran from "./components/Pembayaran";
 
 export default function Home() {
   return (
     <>
-      <Background />
-      <Navbar />
       <Hero />
       <Produk />
+      {/* <Pembayaran /> */}
     </>
   );
 }
