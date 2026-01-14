@@ -16,10 +16,10 @@ function Hero() {
         </h1>
 
         <p className="text-lg md:text-xl text-slate-500 mb-10 max-w-2xl mx-auto leading-relaxed">
-          Anti-Cheat Bypass Technology: Keunggulan utama kami! Tool ini mampu melewati deteksi "Menu Ujian" terbaru, termasuk proteksi pindah tab (tab-switching) dan pemantauan aktivitas browser.
+          Anti-Cheat Bypass Technology: Keunggulan utama kami! Tool ini mampu melewati deteksi "Mode Ujian" terbaru, termasuk proteksi pindah tab (tab-switching) dan pemantauan aktivitas browser.
         </p>
 
-        <div className="max-w-md mx-auto bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl flex items-center shadow-sm animate-pulse">
+        <div className="hidden max-w-md mx-auto bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl flex items-center shadow-sm animate-pulse">
           <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:danger-circle-bold" className="iconify text-xl mr-2 iconify--solar">
             <path
               fill="currentColor"
