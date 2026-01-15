@@ -27,11 +27,11 @@ function Pembayaran({ data }) {
     }
   }, [data]);
 
-  const copyText = async () => {
+  const copyText = async (kontol) => {
     if (typeof window === "undefined") return;
 
     try {
-      await navigator.clipboard.writeText("HR-MK1OT6DA-26KIS4");
+      await navigator.clipboard.writeText(kontol);
       alert("Disalin!");
     } catch (err) {
       alert("Gagal menyalin");
@@ -51,6 +51,18 @@ function Pembayaran({ data }) {
       document.body.style.overflow = "";
     };
   }, []);
+
+  let Paket;
+  if (data?.pesanan.durasi == 1) {
+    Paket = "Harian";
+  } else if (data?.pesanan.durasi == 7) {
+    Paket = "Mingguan";
+  } else if (data?.pesanan.durasi == 30) {
+    Paket = "Bulanan";
+  } else {
+    Paket = "-";
+  }
+
   return (
     <div className="fixed inset-0 z-50">
       {/* BACKDROP (TIDAK IKUT SCROLL) */}
@@ -112,7 +124,7 @@ function Pembayaran({ data }) {
                 Selesaikan dalam
               </span>
               <span id="countdown" className="font-bold font-mono text-base">
-                <Count targetTime="2026-01-16T03:16:36.360774747Z" />
+                <Count targetTime={data.pembayaran.expired} />
               </span>
             </div>
 
@@ -140,7 +152,10 @@ function Pembayaran({ data }) {
             <div className="w-full bg-slate-50/80 rounded-2xl p-5 space-y-4 mb-6 border border-slate-100">
               <div className="flex justify-between items-center">
                 <span className="text-slate-500 text-xs font-semibold uppercase">Total Tagihan</span>
-                <span className="text-xl font-extrabold text-slate-800">Rp 1.132</span>
+                <span className="text-xl font-extrabold text-slate-800">
+                  Rp
+                  {data ? data.pembayaran.harga.toLocaleString("id-ID") : "0"}
+                </span>
               </div>
               <div className="h-px bg-slate-200/60 w-full"></div>
 
@@ -148,8 +163,8 @@ function Pembayaran({ data }) {
                 <div className="flex justify-between items-center">
                   <span className="text-slate-500 text-xs">ID Transaksi</span>
                   <div className="flex items-center gap-2 bg-white px-2 py-1 rounded-lg border border-slate-100">
-                    <span className="font-mono text-xs font-bold text-slate-700 select-all">HR-MK1OT6DA-26KIS4</span>
-                    <button onClick={copyText} className="text-slate-400 hover:text-blue-600 transition-colors">
+                    <span className="font-mono text-xs font-bold text-slate-700 select-all">{data ? data.pembayaran.TRXID : ""}</span>
+                    <button onClick={() => copyText(data.pembayaran.TRXID)} className="text-slate-400 hover:text-blue-600 transition-colors">
                       <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:copy-bold" className="iconify iconify--solar">
                         <path
                           fill="currentColor"
@@ -165,7 +180,7 @@ function Pembayaran({ data }) {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-slate-500 text-xs">Status</span>
-                  <span className="text-xs text-amber-500 font-bold bg-amber-50 px-2 py-1 rounded-md">Pending</span>
+                  <span className="text-xs text-amber-500 font-bold bg-amber-50 px-2 py-1 rounded-md">{data ? data.pembayaran.status.charAt(0).toUpperCase() + data.pembayaran.status.slice(1) : ""}</span>
                 </div>
               </div>
             </div>
@@ -215,16 +230,52 @@ function Pembayaran({ data }) {
 
               <div className={`border-t border-slate-100 bg-slate-50/50 p-5 text-sm ${openDetail ? "block" : "hidden"}`}>
                 <div className="flex justify-between mb-2">
-                  <span className="text-slate-500">Item</span>
-                  <span className="font-medium text-slate-800 text-right">HRSTOREfixs</span>
+                  <span className="text-slate-500">WhatsApp</span>
+                  <span className="font-medium text-slate-800">{data ? data.pesanan.wa : "-"}</span>
                 </div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-slate-500">Harga</span>
-                  <span className="font-medium text-slate-800">Rp 1.213</span>
+                  <span className="text-slate-500">Cookie</span>
+                  <span className="font-medium text-slate-800 text-right">{data ? data.pesanan.cookietext : "-"}</span>
                 </div>
+                <div className="flex justify-between mb-2">
+                  <span className="text-slate-500">Paket</span>
+                  <span className="font-medium text-slate-800">{Paket}</span>
+                </div>
+                {/* <div className="flex justify-between pt-2 border-t border-slate-200">
+                  <span className="font-bold text-slate-700">Token</span>
+                  <span className="font-bold gradient-text">{data ? data.pesanan.token : "-"}</span>
+                  <button onClick={copyText} className="text-slate-400 hover:text-blue-600 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:copy-bold" className="iconify iconify--solar">
+                      <path
+                        fill="currentColor"
+                        d="M15.24 2h-3.894c-1.764 0-3.162 0-4.255.148c-1.126.152-2.037.472-2.755 1.193c-.719.721-1.038 1.636-1.189 2.766C3 7.205 3 8.608 3 10.379v5.838c0 1.508.92 2.8 2.227 3.342c-.067-.91-.067-2.185-.067-3.247v-5.01c0-1.281 0-2.386.118-3.27c.127-.948.413-1.856 1.147-2.593s1.639-1.024 2.583-1.152c.88-.118 1.98-.118 3.257-.118h3.07c1.276 0 2.374 0 3.255.118A3.6 3.6 0 0 0 15.24 2"
+                      ></path>
+                      <path
+                        fill="currentColor"
+                        d="M6.6 11.397c0-2.726 0-4.089.844-4.936c.843-.847 2.2-.847 4.916-.847h2.88c2.715 0 4.073 0 4.917.847S21 8.671 21 11.397v4.82c0 2.726 0 4.089-.843 4.936c-.844.847-2.202.847-4.917.847h-2.88c-2.715 0-4.073 0-4.916-.847c-.844-.847-.844-2.21-.844-4.936z"
+                      ></path>
+                    </svg>
+                  </button>
+                </div> */}
                 <div className="flex justify-between pt-2 border-t border-slate-200">
-                  <span className="font-bold text-slate-700">Total</span>
-                  <span className="font-bold text-blue-600">Rp 1.213</span>
+                  <span className="font-bold text-slate-700">Token</span>
+
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold gradient-text">{data ? data.pesanan.token : "-"}</span>
+
+                    <button onClick={() => copyText(data.pesanan.token)} className="text-slate-400 hover:text-blue-600 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:copy-bold" className="iconify iconify--solar">
+                        <path
+                          fill="currentColor"
+                          d="M15.24 2h-3.894c-1.764 0-3.162 0-4.255.148c-1.126.152-2.037.472-2.755 1.193c-.719.721-1.038 1.636-1.189 2.766C3 7.205 3 8.608 3 10.379v5.838c0 1.508.92 2.8 2.227 3.342c-.067-.91-.067-2.185-.067-3.247v-5.01c0-1.281 0-2.386.118-3.27c.127-.948.413-1.856 1.147-2.593s1.639-1.024 2.583-1.152c.88-.118 1.98-.118 3.257-.118h3.07c1.276 0 2.374 0 3.255.118A3.6 3.6 0 0 0 15.24 2"
+                        ></path>
+                        <path
+                          fill="currentColor"
+                          d="M6.6 11.397c0-2.726 0-4.089.844-4.936c.843-.847 2.2-.847 4.916-.847h2.88c2.715 0 4.073 0 4.917.847S21 8.671 21 11.397v4.82c0 2.726 0 4.089-.843 4.936c-.844.847-2.202.847-4.917.847h-2.88c-2.715 0-4.073 0-4.916-.847c-.844-.847-.844-2.21-.844-4.936z"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
