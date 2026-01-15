@@ -36,7 +36,7 @@ export default function FAQ() {
       <div className="max-w-4xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-extrabold text-slate-900">Pertanyaan yang Sering Diajukan</h2>
+          <h2 className="text-3xl font-extrabold text-slate-900 gradient-text">Pertanyaan yang Sering Diajukan</h2>
           <p className="text-slate-500 mt-2 text-sm">Temukan jawaban atas pertanyaan seputar layanan kami</p>
         </div>
 

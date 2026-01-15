@@ -31,10 +31,8 @@ export default function Countdown({ targetTime, tgl }) {
     return () => clearInterval(timer);
   }, [targetTime]);
 
-  if (!timeLeft && tgl) {
-    return `${tanggal} 00:00:00`;
-  } else if (!timeLeft) {
-    return "00:00";
+  if (!timeLeft) {
+    return "EXPIRED";
   }
 
   if (!tgl) {

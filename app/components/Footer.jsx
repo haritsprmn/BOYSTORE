@@ -83,10 +83,10 @@ export default function Footer() {
           <p className="text-xs text-slate-500">© {new Date().getFullYear()} Harits. All rights reserved.</p>
 
           <div className="flex gap-4 text-slate-400">
-            <a href="#" className="hover:text-white transition">
+            <a href="https://www.instagram.com/haritsprmn_/" className="hover:text-white transition">
               Instagram
             </a>
-            <a href="#" className="hover:text-white transition">
+            <a href="https://chat.whatsapp.com/HfjFUViPBkgIWKzGNOPLtq" className="hover:text-white transition">
               WhatsApp
             </a>
           </div>

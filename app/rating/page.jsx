@@ -6,6 +6,8 @@ export default function RatingUlasan() {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [review, setReview] = useState("");
+  const [token, setToken] = useState("");
+  const [nama, setNama] = useState("");
 
   return (
     <>
@@ -15,7 +17,7 @@ export default function RatingUlasan() {
           <div className="bg-slate-50 border border-slate-100 rounded-3xl p-8 shadow-sm">
             {/* Header */}
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-extrabold text-slate-900">Beri Penilaian</h2>
+              <h2 className="text-2xl font-extrabold text-slate-900 gradient-text">Beri Penilaian</h2>
               <p className="text-sm text-slate-500 mt-1">Pendapat Anda sangat berarti bagi kami</p>
             </div>
 
@@ -38,9 +40,27 @@ export default function RatingUlasan() {
             {/* Rating Text */}
             <p className="text-center text-sm text-slate-600 mb-6">{rating === 0 ? "Pilih rating" : `Anda memberi ${rating} dari 5 bintang`}</p>
 
+            {/* Token Input */}
+            <div className="mb-2">
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Token (WAJIB)</label>
+              <input
+                type="text"
+                placeholder="Nama lengkap"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+              />
+            </div>
+
+            {/* Nama Input */}
+            <div className="mb-2">
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Nama (Opsional)</label>
+              <input type="text" placeholder="Anonim" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" value={nama} onChange={(e) => setNama(e.target.value)} />
+            </div>
+
             {/* Review Input */}
             <div className="mb-6">
-              <label className="block text-xs font-semibold text-slate-600 mb-2">Ulasan (Opsional)</label>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Ulasan (Opsional)</label>
               <textarea
                 value={review}
                 onChange={(e) => setReview(e.target.value)}

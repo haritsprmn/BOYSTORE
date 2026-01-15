@@ -93,3 +93,24 @@ body {
 .animate-slide-down-soft {
   animation: slide-down-soft 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+@keyframes light-sweep {
+  0% {
+    transform: translateX(-100%) rotate(12deg);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateX(250%) rotate(12deg);
+    opacity: 0;
+  }
+}
+
+.animate-light-sweep {
+  animation: light-sweep 6s ease-in-out infinite;
+}
