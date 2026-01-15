@@ -25,7 +25,6 @@ export default function Home() {
       <Review arah="left" />
       <Produk />
       <Pembayaran data={data} show={open} onClose={() => setOpen(false)} />
-      <TimeID ts="2026-01-05T21:43:55.769Z" />
     </>
   );
 }

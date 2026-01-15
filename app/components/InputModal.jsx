@@ -1,4 +1,17 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import AkunDropDown from "./AkunDropDown";
+import { statusAkun } from "../lib/api";
+import { StatusAkunResponse } from "../types/akuncok";
+
 function InputModal({ isOpen, onClose, product }) {
+  const [akun, setAkun] = useState(null);
+
+  useEffect(() => {
+    statusAkun().then((data) => setAkun(data));
+  }, []);
+
   if (!isOpen) return null;
   return (
     <div id="inputModal" className="fixed inset-0 z-50 flex items-center justify-center px-4">
@@ -55,7 +68,8 @@ function InputModal({ isOpen, onClose, product }) {
           </div>
 
           {/* <!-- Input Pilih Akun (Dropdown dari API) --> */}
-          <div className="mb-8">
+          <AkunDropDown akun={akun} />
+          {/* <div className="mb-8">
             <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Pilih Akun / Cookie</label>
             <div className="relative">
               <select
@@ -87,7 +101,7 @@ function InputModal({ isOpen, onClose, product }) {
                 </svg>
               </div>
             </div>
-          </div>
+          </div> */}
 
           <button type="submit" className="w-full btn-gradient text-white font-bold py-3.5 rounded-xl shadow-lg hover:shadow-blue-200 transition-all flex justify-center items-center gap-2">
             Lanjut Pembayaran
