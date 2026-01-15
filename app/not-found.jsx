@@ -5,7 +5,7 @@ import Link from "next/link";
 export default function NotFound() {
   return (
     <div className="min-h-screen flex items-center justify-center px-6">
-      <div className="max-w-md w-full text-center bg-white rounded-3xl shadow-xl p-10">
+      <div className="max-w-md w-full text-center rounded-3xl p-10">
         {/* Icon */}
         <div className="mx-auto mb-6 w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-blue-600">

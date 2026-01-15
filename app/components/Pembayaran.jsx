@@ -1,7 +1,48 @@
 "use client";
-import { useEffect } from "react";
 
-function Pembayaran() {
+import { useEffect, useState, useRef } from "react";
+import Count from "./Count";
+import TimeID from "./TimeID";
+import Link from "next/link";
+import QRCode from "qrcode";
+import Image from "next/image";
+
+function Pembayaran({ data }) {
+  console.log(data);
+  const [qrSrc, setQrSrc] = useState("/blank.png");
+
+  useEffect(() => {
+    if (!data?.pembayaran) return;
+
+    if (data.pembayaran.imgqr) {
+      QRCode.toDataURL(data.pembayaran.imgqr, {
+        width: 450,
+        margin: 1,
+        color: { dark: "#000", light: "#FFF" },
+      })
+        .then(setQrSrc)
+        .catch((e) => console.error("QR ERROR:", e));
+    } else if (data.pembayaran.imgqrh) {
+      setQrSrc(data.pembayaran.imgqrh);
+    }
+  }, [data]);
+
+  const copyText = async () => {
+    if (typeof window === "undefined") return;
+
+    try {
+      await navigator.clipboard.writeText("HR-MK1OT6DA-26KIS4");
+      alert("Disalin!");
+    } catch (err) {
+      alert("Gagal menyalin");
+    }
+  };
+
+  const [openDetail, setOpenDetail] = useState(false);
+  const [openTutorial, setOpenTutorial] = useState(false);
+
+  const AccordionDetail = () => setOpenDetail(!openDetail);
+  const AccordionTutorial = () => setOpenTutorial(!openTutorial);
   useEffect(() => {
     // lock scroll
     document.body.style.overflow = "hidden";
@@ -42,7 +83,7 @@ function Pembayaran() {
           </div>
 
           <div className="p-6 flex flex-col items-center">
-            <div className="w-full bg-amber-50 border border-amber-100 text-amber-600 px-4 py-3 rounded-xl text-sm text-center mb-6 flex items-center justify-center gap-2">
+            {/* <div className="w-full bg-amber-50 border border-amber-100 text-amber-600 px-4 py-3 rounded-xl text-sm text-center mb-6 flex items-center justify-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="svg-spinners:ring-resize" className="iconify animate-spin text-lg iconify--svg-spinners">
                 <g stroke="currentColor">
                   <circle cx="12" cy="12" r="9.5" fill="none" strokeLinecap="round" strokeWidth="3">
@@ -61,12 +102,24 @@ function Pembayaran() {
                 </g>
               </svg>
               Status: PENDING. Menunggu pembayaran.
+            </div> */}
+            <div className="w-full mb-4 bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm font-medium flex justify-between items-center border border-red-100 shadow-sm">
+              <span className="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M12.75 7a.75.75 0 0 0-1.5 0v5a.75.75 0 0 0 .352.636l3 1.875a.75.75 0 1 0 .796-1.272l-2.648-1.655z"></path>
+                  <path fill="currentColor" fillRule="evenodd" d="M12 3.25a8.75 8.75 0 1 0 0 17.5a8.75 8.75 0 0 0 0-17.5M4.75 12a7.25 7.25 0 1 1 14.5 0a7.25 7.25 0 0 1-14.5 0" clipRule="evenodd"></path>
+                </svg>{" "}
+                Selesaikan dalam
+              </span>
+              <span id="countdown" className="font-bold font-mono text-base">
+                <Count targetTime="2026-01-16T03:16:36.360774747Z" />
+              </span>
             </div>
 
             {/* <!-- QR Code Frame --> */}
-            <div className="relative p-4 bg-white rounded-2xl border-2 border-dashed border-slate-200 shadow-sm mb-6 group hover:border-blue-400 transition-colors">
-              <img src="https://yogateway.id/assets/qris/qris_YO-5C0DCF4F.png" alt="QRIS" className="w-48 h-48 object-contain rounded-lg mx-auto" />
-              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white px-3 py-1 rounded-full border border-slate-200 shadow-sm flex items-center gap-1">
+            <div className="relative p-4 bg-white rounded-2xl border-2 border-dashed border-blue-400 shadow-sm mb-6 group hover:border-slate-200 transition-colors">
+              <Image src={qrSrc} alt="QR Pembayaran" width={192} height={192} className="object-contain rounded-lg mx-auto" />
+              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white px-3 py-1 rounded-full border border-blue-400 shadow-sm flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:qr-code-bold" className="iconify text-slate-900 iconify--solar">
                   <path
                     fill="currentColor"
@@ -95,14 +148,8 @@ function Pembayaran() {
                 <div className="flex justify-between items-center">
                   <span className="text-slate-500 text-xs">ID Transaksi</span>
                   <div className="flex items-center gap-2 bg-white px-2 py-1 rounded-lg border border-slate-100">
-                    <span className="font-mono text-xs font-bold text-slate-700 select-all">YO-5C0DCF4F</span>
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText("YO-5C0DCF4F");
-                        alert("Disalin!");
-                      }}
-                      className="text-slate-400 hover:text-blue-600 transition-colors"
-                    >
+                    <span className="font-mono text-xs font-bold text-slate-700 select-all">HR-MK1OT6DA-26KIS4</span>
+                    <button onClick={copyText} className="text-slate-400 hover:text-blue-600 transition-colors">
                       <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:copy-bold" className="iconify iconify--solar">
                         <path
                           fill="currentColor"
@@ -117,8 +164,8 @@ function Pembayaran() {
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-500 text-xs">Berlaku Hingga</span>
-                  <span className="text-xs text-red-500 font-bold bg-red-50 px-2 py-1 rounded-md">2025-12-06 02:24:42</span>
+                  <span className="text-slate-500 text-xs">Status</span>
+                  <span className="text-xs text-amber-500 font-bold bg-amber-50 px-2 py-1 rounded-md">Pending</span>
                 </div>
               </div>
             </div>
@@ -139,9 +186,8 @@ function Pembayaran() {
                 </svg>
                 Cek Status Pembayaran
               </a>
-              <a
-                href="https://yogateway.id/index.php?page=pay&amp;slug=85122b8497c9c999d114294bba6e20a1"
-                target="_blank"
+              <Link
+                href="/detail?trx=HR-MK1OT6DA-26KIS4"
                 className="w-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-200 text-center font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:link-circle-bold" className="iconify text-lg iconify--solar">
@@ -152,11 +198,68 @@ function Pembayaran() {
                     clipRule="evenodd"
                   ></path>
                 </svg>
-                Buka Link Pembayaran
-              </a>
+                Buka Detail Pesanan
+              </Link>
               <a href="?reset=1" className="block text-center text-xs text-red-400 hover:text-red-600 font-medium transition-colors pt-2">
                 Batalkan Transaksi
               </a>
+            </div>
+            <div className="w-full bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+              <button
+                onClick={AccordionDetail} // ✅ React style
+                className="w-full px-5 py-3 flex justify-between items-center bg-white hover:bg-slate-50 transition"
+              >
+                <span className="text-sm font-semibold text-slate-700">Rincian Pesanan</span>
+                <iconify-icon icon="heroicons:chevron-down" className="text-slate-400 transition-transform" style={{ transform: openDetail ? "rotate(180deg)" : "rotate(0deg)" }} />
+              </button>
+
+              <div className={`border-t border-slate-100 bg-slate-50/50 p-5 text-sm ${openDetail ? "block" : "hidden"}`}>
+                <div className="flex justify-between mb-2">
+                  <span className="text-slate-500">Item</span>
+                  <span className="font-medium text-slate-800 text-right">HRSTOREfixs</span>
+                </div>
+                <div className="flex justify-between mb-2">
+                  <span className="text-slate-500">Harga</span>
+                  <span className="font-medium text-slate-800">Rp 1.213</span>
+                </div>
+                <div className="flex justify-between pt-2 border-t border-slate-200">
+                  <span className="font-bold text-slate-700">Total</span>
+                  <span className="font-bold text-blue-600">Rp 1.213</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 w-full bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+              <button onClick={AccordionTutorial} className="w-full px-5 py-3 flex justify-between items-center bg-white hover:bg-slate-50 transition">
+                <span className="text-sm font-semibold text-slate-700">Cara Pembayaran</span>
+                <iconify-icon id="icon-guide" icon="heroicons:chevron-down" className="text-slate-400 transition-transform" style={{ transform: openTutorial ? "rotate(180deg)" : "rotate(0deg)" }}></iconify-icon>
+              </button>
+              <div id="guide-details" className={`border-t border-slate-100 bg-slate-50/50 p-5 text-sm text-slate-600 space-y-3 ${openTutorial ? "block" : "hidden"}`}>
+                <div className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-xs">1</span>
+                  <p>Buka aplikasi e-wallet (GoPay, OVO, Dana, LinkAja, ShopeePay) atau Mobile Banking (BCA, Mandiri, BRI, dll).</p>
+                </div>
+                <div className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-xs">2</span>
+                  <p>
+                    Pilih menu <strong>Scan QRIS</strong>.
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-xs">3</span>
+                  <p>Arahkan kamera ke kode QR di atas.</p>
+                </div>
+                <div className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-xs">4</span>
+                  <p>
+                    Periksa nama merchant <strong className="text-slate-800">PAKASIR</strong> dan total bayar.
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-xs">5</span>
+                  <p>Masukkan PIN Anda dan pembayaran selesai.</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
