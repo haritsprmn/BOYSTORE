@@ -1,0 +1,5 @@
+{
+  "user": 0,
+  "pesanan": { "token": "BOY-E3J6C", "wa": "6282280654836", "durasi": "1", "cookie": "34", "cookietext": "Gio" },
+  "pembayaran": { "TRXID": "HR-MKBW7ZUJ-R9LCGJ", "harga": 3331, "status": "EXPIRED", "expired": "2026-01-14T03:16:36.360774747Z" }
+}

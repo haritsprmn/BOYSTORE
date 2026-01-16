@@ -3,7 +3,6 @@ import Hero from "./components/Hero";
 import Produk from "./components/Produk";
 import Pembayaran from "./components/Pembayaran";
 import Review from "./components/Review";
-import TimeID from "./components/TimeID";
 import { useState, useEffect } from "react";
 
 export default function Home() {
@@ -12,10 +11,14 @@ export default function Home() {
 
   useEffect(() => {
     const lastTrx = localStorage.getItem("last_trx");
-    if (lastTrx) {
+    if (!lastTrx) return;
+    const parsed = JSON.parse(lastTrx);
+
+    setData(parsed);
+
+    if (parsed?.pembayaran?.status !== "completed") {
       setOpen(true);
     }
-    if (lastTrx) setData(JSON.parse(lastTrx));
   }, []);
 
   return (

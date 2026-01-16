@@ -9,32 +9,66 @@ import Image from "next/image";
 import Alert from "./Alert";
 
 function Pembayaran({ data, show, onClose }) {
+  const [loading, setLoading] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [warna, setWarna] = useState(true);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [qrSrc, setQrSrc] = useState("/blank.png");
+
+  // --- Cek Status ---
+  const [status, setStatus] = useState(data);
+
+  async function cekStatus(trxid) {
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/cekstatus", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          trxid,
+        }),
+      });
+
+      const result = await res.json();
+      setStatus(result);
+
+      // simpan localStorage
+      setLoading(false);
+      localStorage.setItem("last_trx", JSON.stringify(result));
+    } catch (err) {
+      setWarna(false);
+      setAlertMessage("Gagal cek status, coba lagi");
+      setShowAlert(true);
+      setLoading(false);
+
+      // ⛔ JANGAN reload
+    }
+  }
+
   const [visible, setVisible] = useState(show);
 
   useEffect(() => {
     if (show) setVisible(true); // trigger masuk
   }, [show, onClose]);
 
-  const [qrSrc, setQrSrc] = useState("/blank.png");
-
+  const currentData = status || data;
   useEffect(() => {
-    if (!data?.pembayaran) return;
+    if (!currentData?.pembayaran) return;
 
-    if (data.pembayaran.imgqr) {
-      QRCode.toDataURL(data.pembayaran.imgqr, {
+    if (currentData.pembayaran.imgqr) {
+      QRCode.toDataURL(currentData.pembayaran.imgqr, {
         width: 450,
         margin: 1,
         color: { dark: "#000", light: "#FFF" },
       })
         .then(setQrSrc)
-        .catch((e) => console.error("QR ERROR:", e));
-    } else if (data.pembayaran.imgqrh) {
-      setQrSrc(data.pembayaran.imgqrh);
+        .catch(console.error);
+    } else if (currentData.pembayaran.imgqrh) {
+      setQrSrc(currentData.pembayaran.imgqrh);
     }
-  }, [data]);
+  }, [currentData]);
 
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
   const copyText = async (kontol) => {
     if (typeof window === "undefined") return;
 
@@ -118,23 +152,38 @@ function Pembayaran({ data, show, onClose }) {
             </div>
 
             <div className="p-6 flex flex-col items-center">
-              <div className="w-full mb-4 bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm font-medium flex justify-between items-center border border-red-100 shadow-sm">
-                <span className="flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,20a9,9,0,1,1,9-9A9,9,0,0,1,12,21Z"></path>
-                    <rect width={2} height={7} x={11} y={6} fill="currentColor" rx={1}>
-                      <animateTransform attributeName="transform" dur="9s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"></animateTransform>
-                    </rect>
-                    <rect width={2} height={9} x={11} y={11} fill="currentColor" rx={1}>
-                      <animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"></animateTransform>
-                    </rect>
-                  </svg>{" "}
-                  Selesaikan dalam
-                </span>
-                <span id="countdown" className="font-bold font-mono text-base">
-                  <Count targetTime={data.pembayaran.expired} />
-                </span>
-              </div>
+              {currentData?.pembayaran?.status == "completed" && (
+                <div className="w-full mb-4 bg-emerald-50 text-emerald-600 px-4 py-2 rounded-lg text-sm font-medium flex justify-between items-center border border-emerald-100 shadow-sm">
+                  <span className="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24">
+                      <path fill="currentColor" d="M23 12c0 6.075-4.925 11-11 11S1 18.075 1 12S5.925 1 12 1s11 4.925 11 11M9.305 18.11l9.402-9.403l-1.414-1.414l-7.883 7.883l-2.476-3.01l-1.511 1.31l3.882 4.633z"></path>
+                    </svg>{" "}
+                    Masa Aktif
+                  </span>
+                  <span id="countdown" className="font-bold font-mono text-base">
+                    <TimeID ts={currentData.expired} />
+                  </span>
+                </div>
+              )}
+              {currentData?.pembayaran?.status != "completed" && (
+                <div className="w-full mb-4 bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm font-medium flex justify-between items-center border border-red-100 shadow-sm">
+                  <span className="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24">
+                      <path fill="currentColor" d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,20a9,9,0,1,1,9-9A9,9,0,0,1,12,21Z"></path>
+                      <rect width={2} height={7} x={11} y={6} fill="currentColor" rx={1}>
+                        <animateTransform attributeName="transform" dur="9s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"></animateTransform>
+                      </rect>
+                      <rect width={2} height={9} x={11} y={11} fill="currentColor" rx={1}>
+                        <animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"></animateTransform>
+                      </rect>
+                    </svg>{" "}
+                    Selesaikan dalam
+                  </span>
+                  <span id="countdown" className="font-bold font-mono text-base">
+                    <Count targetTime={currentData.pembayaran.expired} />
+                  </span>
+                </div>
+              )}
 
               {/* <!-- QR Code Frame --> */}
               <div className="relative p-4 bg-white rounded-2xl border-2 border-dashed border-blue-400 shadow-sm mb-6 group hover:border-slate-200 transition-colors">
@@ -188,27 +237,47 @@ function Pembayaran({ data, show, onClose }) {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-slate-500 text-xs">Status</span>
-                    <span className="text-xs text-amber-500 font-bold bg-amber-50 px-2 py-1 rounded-md">{data ? data.pembayaran.status.charAt(0).toUpperCase() + data.pembayaran.status.slice(1) : ""}</span>
+                    {currentData?.pembayaran?.status === "pending" && <span className="text-xs text-amber-500 font-bold bg-amber-50 px-2 py-1 rounded-md">PENDING</span>}
+
+                    {currentData?.pembayaran?.status === "completed" && <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded-md">COMPLETED</span>}
+
+                    {currentData?.pembayaran?.status === "EXPIRED" && <span className="text-xs text-red-500 font-bold bg-red-50 px-2 py-1 rounded-md">EXPIRED</span>}
                   </div>
                 </div>
               </div>
 
               {/* <!-- Action Buttons --> */}
               <div className="w-full space-y-3">
-                <a
-                  href="?check_status=1&amp;trx_id=YO-5C0DCF4F&amp;amount=1132&amp;qr=https%3A%2F%2Fyogateway.id%2Fassets%2Fqris%2Fqris_YO-5C0DCF4F.png&amp;expired=2025-12-06+02%3A24%3A42&amp;prod=Paket+Harian"
-                  className="w-full btn-gradient text-white text-center font-bold py-3.5 rounded-xl shadow-lg shadow-blue-200/50 flex items-center justify-center gap-2 transition-transform active:scale-95"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:refresh-circle-bold" className="iconify text-xl iconify--solar">
-                    <path
-                      fill="currentColor"
-                      fillRule="evenodd"
-                      d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12S6.477 2 12 2s10 4.477 10 10m-16.54-.917a6.59 6.59 0 0 1 6.55-5.833a6.59 6.59 0 0 1 5.242 2.592a.75.75 0 0 1-1.192.911a5.09 5.09 0 0 0-4.05-2.003a5.09 5.09 0 0 0-5.037 4.333h.364a.75.75 0 0 1 .53 1.281l-1.169 1.167a.75.75 0 0 1-1.06 0L4.47 12.364a.75.75 0 0 1 .53-1.28zm12.902-.614a.75.75 0 0 0-1.06 0l-1.168 1.167a.75.75 0 0 0 .53 1.28h.363a5.09 5.09 0 0 1-5.036 4.334a5.08 5.08 0 0 1-4.038-1.986a.75.75 0 0 0-1.188.916a6.58 6.58 0 0 0 5.226 2.57a6.59 6.59 0 0 0 6.549-5.833H19a.75.75 0 0 0 .53-1.281z"
-                      clipRule="evenodd"
-                    ></path>
-                  </svg>
-                  Cek Status Pembayaran
-                </a>
+                {currentData?.pembayaran?.status != "completed" && (
+                  <button
+                    onClick={() => cekStatus(currentData.pembayaran.TRXID)}
+                    disabled={loading}
+                    type="submit"
+                    className="w-full btn-gradient text-white text-center font-bold py-3.5 rounded-xl shadow-lg shadow-blue-200/50 flex items-center justify-center gap-2 transition-transform active:scale-95"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:refresh-circle-bold" className="iconify text-xl iconify--solar">
+                      <path
+                        fill="currentColor"
+                        fillRule="evenodd"
+                        d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12S6.477 2 12 2s10 4.477 10 10m-16.54-.917a6.59 6.59 0 0 1 6.55-5.833a6.59 6.59 0 0 1 5.242 2.592a.75.75 0 0 1-1.192.911a5.09 5.09 0 0 0-4.05-2.003a5.09 5.09 0 0 0-5.037 4.333h.364a.75.75 0 0 1 .53 1.281l-1.169 1.167a.75.75 0 0 1-1.06 0L4.47 12.364a.75.75 0 0 1 .53-1.28zm12.902-.614a.75.75 0 0 0-1.06 0l-1.168 1.167a.75.75 0 0 0 .53 1.28h.363a5.09 5.09 0 0 1-5.036 4.334a5.08 5.08 0 0 1-4.038-1.986a.75.75 0 0 0-1.188.916a6.58 6.58 0 0 0 5.226 2.57a6.59 6.59 0 0 0 6.549-5.833H19a.75.75 0 0 0 .53-1.281z"
+                        clipRule="evenodd"
+                      ></path>
+                    </svg>
+                    {loading ? "Memproses..." : "Cek Status Pembayaran"}
+                  </button>
+                )}
+                {currentData?.pembayaran?.status == "completed" && (
+                  <Link
+                    href={`/rating?token=${currentData?.pesanan?.token}`}
+                    type="submit"
+                    className="w-full btn-gradient-yellow text-white text-center font-bold py-3.5 rounded-xl shadow-lg shadow-blue-200/50 flex items-center justify-center gap-2 transition-transform active:scale-95"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24">
+                      <path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21z"></path>
+                    </svg>
+                    Beri Penilaian
+                  </Link>
+                )}
                 <Link
                   href="/detail?trx=HR-MK1OT6DA-26KIS4"
                   className="w-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-200 text-center font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2"
@@ -236,11 +305,11 @@ function Pembayaran({ data, show, onClose }) {
                 <div className={`border-t border-slate-100 bg-slate-50/50 p-5 text-sm ${openDetail ? "block" : "hidden"}`}>
                   <div className="flex justify-between mb-2">
                     <span className="text-slate-500">WhatsApp</span>
-                    <span className="font-medium text-slate-800">{data ? data.pesanan.wa : "-"}</span>
+                    <span className="font-medium text-slate-800">{currentData ? currentData.pesanan.wa : "-"}</span>
                   </div>
                   <div className="flex justify-between mb-2">
                     <span className="text-slate-500">Cookie</span>
-                    <span className="font-medium text-slate-800 text-right">{data ? data.pesanan.cookietext : "-"}</span>
+                    <span className="font-medium text-slate-800 text-right">{currentData ? currentData.pesanan.cookietext : "-"}</span>
                   </div>
                   <div className="flex justify-between mb-2">
                     <span className="text-slate-500">Paket</span>
@@ -250,9 +319,9 @@ function Pembayaran({ data, show, onClose }) {
                     <span className="font-bold text-slate-700">Token</span>
 
                     <div className="flex items-center gap-2">
-                      <span className="font-bold gradient-text">{data ? data.pesanan.token : "-"}</span>
+                      <span className="font-bold gradient-text">{currentData ? currentData.pesanan.token : "-"}</span>
 
-                      <button onClick={() => copyText(data.pesanan.token)} className="text-slate-400 hover:text-blue-600 transition-colors">
+                      <button onClick={() => copyText(currentData.pesanan.token)} className="text-slate-400 hover:text-blue-600 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:copy-bold" className="iconify iconify--solar">
                           <path
                             fill="currentColor"
@@ -305,7 +374,7 @@ function Pembayaran({ data, show, onClose }) {
           </div>
         </div>
       </div>
-      <Alert show={showAlert} onClose={() => setShowAlert(false)} message={alertMessage} />
+      <Alert show={showAlert} warna={warna} onClose={() => setShowAlert(false)} message={alertMessage} />
     </>
   );
 }

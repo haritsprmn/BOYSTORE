@@ -4,17 +4,61 @@ import Pembayaran from "@/app/components/Pembayaran";
 
 function Navbar() {
   const [hasLastTrx, setHasLastTrx] = useState(false);
+  const [open, setOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [data, setData] = useState(null);
+  const [trxStatus, setTrxStatus] = useState(null);
 
   useEffect(() => {
     const savedTrx = localStorage.getItem("last_trx");
-    if (savedTrx) {
+    if (!savedTrx) return;
+
+    try {
+      const parsed = JSON.parse(savedTrx);
+      setData(parsed);
       setHasLastTrx(true);
+      setTrxStatus(parsed?.pembayaran?.status ?? null);
+    } catch (err) {
+      console.error("Invalid last_trx", err);
     }
-    if (savedTrx) setData(JSON.parse(savedTrx));
   }, []);
-  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const handler = () => {
+      const savedTrx = localStorage.getItem("last_trx");
+      if (!savedTrx) return;
+
+      try {
+        const parsed = JSON.parse(savedTrx);
+        setData(parsed);
+        setHasLastTrx(true);
+        setTrxStatus(parsed?.pembayaran?.status ?? null);
+      } catch (err) {
+        console.error("Invalid trx event", err);
+      }
+    };
+
+    window.addEventListener("trx-created", handler);
+    return () => window.removeEventListener("trx-created", handler);
+  }, []);
+
+  // useEffect(() => {
+  //   const handler = () => {
+  //     const savedTrx = localStorage.getItem("last_trx");
+  //     const parsed = JSON.parse(savedTrx);
+  //     if (parsed?.pembayaran?.status === "completed") {
+  //       setStatus(true);
+  //     }
+  //     if (savedTrx) {
+  //       setHasLastTrx(true);
+  //     }
+  //     setData(JSON.parse(savedTrx));
+  //   };
+
+  //   window.addEventListener("trx-created", handler);
+
+  //   return () => window.removeEventListener("trx-created", handler);
+  // }, []);
 
   return (
     <>
@@ -80,7 +124,7 @@ function Navbar() {
             )}
 
             {/* <!-- Resume Button --> */}
-            {hasLastTrx && (
+            {hasLastTrx && trxStatus !== "completed" && (
               <button id="resumeBtn" onClick={() => setOpen(true)} className="none px-4 py-2 bg-amber-100 text-amber-700 rounded-full text-sm font-bold hover:bg-amber-200 transition-colors flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:history-bold" className="iconify animate-pulse iconify--solar">
                   <path
@@ -91,6 +135,19 @@ function Navbar() {
                   ></path>
                 </svg>
                 Lanjutkan Transaksi
+              </button>
+            )}
+            {hasLastTrx && trxStatus === "completed" && (
+              <button id="resumeBtn" onClick={() => setOpen(true)} className="none px-4 py-2 bg-sky-100 text-sky-700 rounded-full text-sm font-bold hover:bg-sky-200 transition-colors flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:history-bold" className="iconify animate-pulse iconify--solar">
+                  <path
+                    fill="currentColor"
+                    fillRule="evenodd"
+                    d="M5.079 5.069c3.795-3.79 9.965-3.75 13.783.069c3.82 3.82 3.86 9.993.064 13.788s-9.968 3.756-13.788-.064a9.81 9.81 0 0 1-2.798-8.28a.75.75 0 1 1 1.487.203a8.31 8.31 0 0 0 2.371 7.017c3.245 3.244 8.468 3.263 11.668.064c3.199-3.2 3.18-8.423-.064-11.668c-3.243-3.242-8.463-3.263-11.663-.068l.748.003a.75.75 0 1 1-.007 1.5l-2.546-.012a.75.75 0 0 1-.746-.747L3.575 4.33a.75.75 0 1 1 1.5-.008zm6.92 2.18a.75.75 0 0 1 .75.75v3.69l2.281 2.28a.75.75 0 1 1-1.06 1.061l-2.72-2.72V8a.75.75 0 0 1 .75-.75"
+                    clipRule="evenodd"
+                  ></path>
+                </svg>
+                Transaksi Terakhir
               </button>
             )}
           </div>

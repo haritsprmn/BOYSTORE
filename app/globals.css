@@ -79,6 +79,18 @@ body {
   transform: translateY(-2px);
 }
 
+/* Button Gradient - Yellow */
+.btn-gradient-yellow {
+  background: linear-gradient(135deg, #facc15, #f59e0b); /* yellow → amber */
+  transition: 0.3s;
+}
+
+.btn-gradient-yellow:hover {
+  background: linear-gradient(135deg, #eab308, #d97706); /* darker on hover */
+  box-shadow: 0 10px 25px -5px rgba(234, 179, 8, 0.45);
+  transform: translateY(-2px);
+}
+
 @keyframes slide-down-soft {
   from {
     opacity: 0;
@@ -92,25 +104,4 @@ body {
 
 .animate-slide-down-soft {
   animation: slide-down-soft 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes light-sweep {
-  0% {
-    transform: translateX(-100%) rotate(12deg);
-    opacity: 0;
-  }
-  30% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 0.6;
-  }
-  100% {
-    transform: translateX(250%) rotate(12deg);
-    opacity: 0;
-  }
-}
-
-.animate-light-sweep {
-  animation: light-sweep 6s ease-in-out infinite;
 }

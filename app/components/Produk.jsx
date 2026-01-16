@@ -1,21 +1,17 @@
 "use client";
 import { useState } from "react";
 import InputModal from "./InputModal.jsx";
+import Pembayaran from "./Pembayaran";
 
 function Produk() {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState({
-    name: "",
-    price: 0,
-  });
+  const [showInput, setShowInput] = useState(false);
+  const [showPay, setShowPay] = useState(false);
+  const [trxData, setTrxData] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const openModal = (name, price) => {
     setSelectedProduct({ name, price });
-    setModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
+    setShowInput(true);
   };
   return (
     <>
@@ -336,7 +332,20 @@ function Produk() {
           </div>
         </div>
       </section>
-      <InputModal isOpen={modalOpen} onClose={closeModal} product={selectedProduct} />
+      {/* MODAL INPUT */}
+      <InputModal
+        isOpen={showInput}
+        product={selectedProduct}
+        onClose={() => setShowInput(false)}
+        onSuccess={(trx) => {
+          setTrxData(trx);
+          setShowInput(false);
+          setShowPay(true);
+        }}
+      />
+
+      {/* MODAL PEMBAYARAN */}
+      <Pembayaran data={trxData} show={showPay} onClose={() => setShowPay(false)} />
     </>
   );
 }
