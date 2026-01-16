@@ -10,6 +10,15 @@ function Navbar() {
   const [trxStatus, setTrxStatus] = useState(null);
 
   useEffect(() => {
+    const handler = () => {
+      setOpen(true);
+    };
+
+    window.addEventListener("open-pembayaran", handler);
+    return () => window.removeEventListener("open-pembayaran", handler);
+  }, []);
+
+  useEffect(() => {
     const savedTrx = localStorage.getItem("last_trx");
     if (!savedTrx) return;
 
@@ -18,6 +27,9 @@ function Navbar() {
       setData(parsed);
       setHasLastTrx(true);
       setTrxStatus(parsed?.pembayaran?.status ?? null);
+      if (parsed?.pembayaran?.status !== "completed") {
+        setOpen(true);
+      }
     } catch (err) {
       console.error("Invalid last_trx", err);
     }

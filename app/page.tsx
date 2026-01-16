@@ -27,7 +27,7 @@ export default function Home() {
       <Review speed={90} arah="right" />
       <Review arah="left" />
       <Produk />
-      <Pembayaran data={data} show={open} onClose={() => setOpen(false)} />
+      {/* <Pembayaran data={data} show={open} onClose={() => setOpen(false)} /> */}
     </>
   );
 }

@@ -1,7 +1,12 @@
 "use client";
 import TimeID from "./TimeID";
+import Count from "./Count";
 
 export default function DetailPesanan({ data }) {
+  if (!data) {
+    return <section className="max-w-3xl mx-auto px-6 py-20 text-center text-slate-500">Memuat detail pesanan...</section>;
+  }
+
   const { pesanan, pembayaran, expired, ulasan } = data;
 
   return (
@@ -9,7 +14,7 @@ export default function DetailPesanan({ data }) {
       <div className="bg-white rounded-3xl shadow-lg border border-slate-100 overflow-hidden">
         {/* HEADER */}
         <div className="bg-slate-50 px-8 py-6 border-b border-slate-100">
-          <h2 className="text-xl font-extrabold text-slate-900">Detail Pesanan</h2>
+          <h2 className="text-xl gradient-text font-extrabold text-slate-900">Detail Pesanan</h2>
           <p className="text-xs text-slate-500 mt-1">
             Token Pesanan: <span className="font-mono font-semibold text-slate-700">{pesanan.token}</span>
           </p>
@@ -18,7 +23,7 @@ export default function DetailPesanan({ data }) {
         <div className="p-8 space-y-8">
           {/* PESANAN */}
           <InfoBlock title="Informasi Pesanan">
-            <InfoRow label="Nomor WhatsApp" value={`+${pesanan.wa}`} />
+            <InfoRow label="Nomor WhatsApp" value={pesanan.wa} />
             <InfoRow label="Durasi" value={`${pesanan.durasi} Hari`} />
             <InfoRow label="Akun / Cookie" value={pesanan.cookietext} />
           </InfoBlock>
@@ -43,12 +48,46 @@ export default function DetailPesanan({ data }) {
           )}
 
           {/* EXPIRED */}
-          <div className="bg-red-50 border border-red-100 rounded-xl p-4 text-sm text-red-600">
-            Berlaku hingga:{" "}
-            <span className="font-semibold">
-              <TimeID ts={expired} />
-            </span>
-          </div>
+          {expired && (
+            <div className="bg-red-50 border border-red-100 rounded-xl p-4 text-sm text-red-600">
+              Berlaku hingga:{" "}
+              <span className="font-semibold">
+                <TimeID ts={expired} />
+              </span>
+            </div>
+          )}
+
+          {!expired && (
+            <div className="flex justify-between items-center bg-red-50 border border-red-100 rounded-xl p-4 text-sm text-red-600">
+              <div>
+                Bayar sebelum:{" "}
+                <span className="font-semibold">
+                  <Count targetTime={pembayaran.expired} />
+                </span>
+              </div>
+              <button
+                id="resumeBtn"
+                onClick={() => {
+                  window.dispatchEvent(new Event("open-pembayaran"));
+                }}
+                className="none px-4 py-2 bg-emerald-300 text-white rounded-full text-sm font-bold hover:bg-red-200 transition-colors flex items-center gap-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:qr-code-bold" className="iconify text-white iconify--solar">
+                  <path
+                    fill="currentColor"
+                    fillRule="evenodd"
+                    d="M16.525 2h.068c.884 0 1.597 0 2.17.055c.592.056 1.108.175 1.571.459c.47.288.864.682 1.152 1.152c.284.463.403.979.46 1.57C22 5.81 22 6.524 22 7.407v.07c0 .58 0 1.064-.037 1.458c-.04.412-.124.795-.34 1.147c-.21.344-.5.633-.844.844c-.352.216-.736.3-1.147.34c-.394.037-.879.037-1.46.037h-1.104c-.836 0-1.533 0-2.086-.074c-.584-.079-1.111-.251-1.535-.675s-.596-.95-.675-1.535c-.074-.553-.074-1.25-.074-2.086V5.827c0-.58 0-1.065.037-1.459c.04-.411.124-.795.34-1.146c.21-.345.5-.634.844-.845c.352-.216.735-.3 1.147-.34C15.459 2 15.944 2 16.525 2m.824 5.814c-.48 0-.72 0-.889-.12a.7.7 0 0 1-.154-.154c-.12-.17-.12-.41-.12-.889s0-.719.12-.888a.7.7 0 0 1 .154-.155c.17-.12.41-.12.889-.12s.719 0 .888.12q.09.065.155.155c.12.169.12.409.12.888s0 .72-.12.889a.7.7 0 0 1-.155.154c-.169.12-.409.12-.888.12M10.08 2.377c-.35-.216-.734-.3-1.146-.34C8.54 2 8.056 2 7.475 2h-.068c-.884 0-1.597 0-2.17.055c-.592.056-1.108.175-1.571.459c-.47.288-.864.682-1.152 1.152c-.284.463-.403.979-.46 1.57C2 5.81 2 6.524 2 7.407v.07c0 .58 0 1.064.037 1.458c.04.412.124.795.34 1.147c.21.344.5.633.845.844c.351.216.735.3 1.146.34c.394.037.878.037 1.46.037h1.104c.836 0 1.533 0 2.086-.074c.584-.079 1.111-.251 1.535-.675s.596-.95.675-1.535c.074-.553.074-1.25.074-2.086V5.827c0-.58 0-1.065-.037-1.459c-.04-.411-.124-.795-.34-1.146a2.56 2.56 0 0 0-.844-.845M5.764 7.694c.169.12.409.12.888.12s.72 0 .889-.12a.7.7 0 0 0 .154-.154c.12-.17.12-.41.12-.889s0-.719-.12-.888a.7.7 0 0 0-.154-.155c-.17-.12-.41-.12-.889-.12s-.719 0-.888.12a.7.7 0 0 0-.155.155c-.12.169-.12.409-.12.888s0 .72.12.889a.7.7 0 0 0 .155.154m3.254 5.078c.584.079 1.111.251 1.535.675s.596.95.675 1.535c.074.553.074 1.25.074 2.086v1.105c0 .58 0 1.065-.037 1.459c-.04.411-.124.795-.34 1.146c-.21.345-.5.634-.844.845c-.352.216-.735.3-1.147.34C8.54 22 8.056 22 7.475 22h-.068c-.884 0-1.597 0-2.17-.055c-.592-.056-1.108-.175-1.571-.459a3.5 3.5 0 0 1-1.152-1.152c-.284-.463-.403-.979-.46-1.57C2 18.19 2 17.477 2 16.594v-.07c0-.58 0-1.065.037-1.458c.04-.412.124-.795.34-1.147c.21-.344.5-.633.845-.844c.351-.216.735-.3 1.146-.34c.394-.037.878-.037 1.46-.037h1.104c.836 0 1.533 0 2.086.074m-2.367 5.74c-.48 0-.719 0-.888-.12a.7.7 0 0 1-.155-.155c-.12-.169-.12-.409-.12-.888s0-.72.12-.889a.7.7 0 0 1 .155-.154c.169-.12.409-.12.888-.12s.72 0 .889.12q.09.065.154.154c.12.17.12.41.12.889s0 .719-.12.888a.7.7 0 0 1-.154.155c-.17.12-.41.12-.889.12"
+                    clipRule="evenodd"
+                  ></path>
+                  <path
+                    fill="currentColor"
+                    d="M12.698 16.616v.035h1.395c0-.668 0-1.116.036-1.458c.033-.33.093-.482.16-.583a1.2 1.2 0 0 1 .32-.321c.102-.067.254-.127.584-.16c.342-.035.79-.036 1.458-.036h1.86v-1.395h-1.895c-.623 0-1.143 0-1.564.042c-.44.045-.849.143-1.217.389c-.28.186-.52.426-.706.706c-.246.368-.344.777-.389 1.217c-.042.42-.042.94-.042 1.564M22 18.535v-.023h-1.395c0 .443 0 .74-.016.97c-.016.224-.043.333-.073.405a1.16 1.16 0 0 1-.63.63c-.07.029-.18.056-.404.072c-.23.015-.527.016-.97.016h-1.86V22h1.883c.414 0 .759 0 1.042-.02a2.6 2.6 0 0 0 .844-.175a2.56 2.56 0 0 0 1.384-1.384c.112-.27.156-.549.176-.844c.019-.283.019-.628.019-1.042m-7.907 2.767a.698.698 0 1 1-1.395 0v-2.79h1.395zm7.209-8.604a.7.7 0 0 0-.697.697v3.256H22v-3.256a.7.7 0 0 0-.698-.697m-5.226 3.919c-.076.184-.076.417-.076.883s0 .699.076.883a1 1 0 0 0 .541.54c.184.077.417.077.883.077s.699 0 .883-.076a1 1 0 0 0 .54-.541c.077-.184.077-.417.077-.883s0-.699-.076-.883a1 1 0 0 0-.541-.54C18.199 16 17.966 16 17.5 16s-.699 0-.883.076a1 1 0 0 0-.54.541"
+                  ></path>
+                </svg>
+                Show
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </section>
@@ -67,7 +106,10 @@ function InfoBlock({ title, children }) {
 }
 
 function InfoRow({ label, value, mono, highlight, status }) {
-  const statusColor = status === "completed" ? "bg-green-100 text-green-600" : "bg-amber-100 text-amber-600";
+  let statusColor;
+  if (status === "completed") statusColor = "bg-emerald-100 text-emerald-600";
+  else if (status === "pending") statusColor = "bg-amber-100 text-amber-600";
+  else if (status == "EXPIRED") statusColor = "bg-red-100 text-red-600";
 
   return (
     <div className="flex justify-between items-center">

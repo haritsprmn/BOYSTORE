@@ -35,7 +35,6 @@ export async function POST(req: NextRequest) {
     }
 
     const TRXID = generateTrxId();
-    // Fetch ke yogateway
     const tai = await fetch("https://app.pakasir.com/api/transactioncreate/qris", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

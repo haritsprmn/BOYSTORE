@@ -1,10 +1,20 @@
+import { useState } from "react";
 import { StatusAkunResponse } from "@/app/types/akuncok";
+
+// interface Props {
+//   akun: StatusAkunResponse;
+//   value: string;
+//   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+// }
 
 interface Props {
   akun: StatusAkunResponse;
+  value: any;
+  onChange: (data: any) => void;
 }
 
-export default function AkunDropDown({ akun }: Props) {
+export default function AkunDropDown({ akun, value, onChange }: Props) {
+  const [selected, setSelected] = useState("");
   if (!akun) {
     return (
       <div className="mb-8">
@@ -42,9 +52,21 @@ export default function AkunDropDown({ akun }: Props) {
         <div className="relative">
           <select
             name="cookie"
+            value={value?.index || ""}
+            onChange={(e) => {
+              const selected = sortedData.find((a) => a.index === Number(e.target.value));
+              onChange(selected);
+            }}
             className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white appearance-none transition-all cursor-pointer"
             required
           >
+            {/* <select
+            name="cookie"
+            value={value}
+            onChange={onChange}
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white appearance-none transition-all cursor-pointer"
+            required
+          > */}
             <option value="">-- Pilih Akun Tersedia --</option>
             {/* generate opsi otomatis */}
             {sortedData

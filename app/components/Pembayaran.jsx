@@ -31,11 +31,16 @@ function Pembayaran({ data, show, onClose }) {
       });
 
       const result = await res.json();
+      // simpan localStorage
+      localStorage.setItem("last_trx", JSON.stringify(result));
       setStatus(result);
 
-      // simpan localStorage
+      if (result?.pembayaran?.status === "completed") {
+        console.log("ini test: " + result?.pembayaran?.status);
+        window.dispatchEvent(new Event("trx-created"));
+      }
+
       setLoading(false);
-      localStorage.setItem("last_trx", JSON.stringify(result));
     } catch (err) {
       setWarna(false);
       setAlertMessage("Gagal cek status, coba lagi");
@@ -268,7 +273,7 @@ function Pembayaran({ data, show, onClose }) {
                 )}
                 {currentData?.pembayaran?.status == "completed" && (
                   <Link
-                    href={`/rating?token=${currentData?.pesanan?.token}`}
+                    href={`/rating?tkn=${currentData?.pesanan?.token}`}
                     type="submit"
                     className="w-full btn-gradient-yellow text-white text-center font-bold py-3.5 rounded-xl shadow-lg shadow-blue-200/50 flex items-center justify-center gap-2 transition-transform active:scale-95"
                   >
@@ -279,7 +284,7 @@ function Pembayaran({ data, show, onClose }) {
                   </Link>
                 )}
                 <Link
-                  href="/detail?trx=HR-MK1OT6DA-26KIS4"
+                  href={`/detail?trx=${currentData.pembayaran.TRXID}`}
                   className="w-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-200 text-center font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:link-circle-bold" className="iconify text-lg iconify--solar">

@@ -1,4 +1,4 @@
-import { StatusAkunResponse } from "@/types/akuncok";
+import { StatusAkunResponse } from "@/app/types/akuncok";
 
 export async function statusAkun(): Promise<StatusAkunResponse> {
   const res = await fetch("https://statusakun.olimdipo.my.id/api/all-accounts", {

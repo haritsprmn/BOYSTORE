@@ -24,12 +24,12 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/produk" className="hover:text-white transition">
+                <Link href="/pesanan" className="hover:text-white transition">
                   Cek Pesanan
                 </Link>
               </li>
               <li>
-                <Link href="/cek-pesanan" className="hover:text-white transition">
+                <Link href="/cookie" className="hover:text-white transition">
                   Update Cookie
                 </Link>
               </li>

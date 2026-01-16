@@ -27,7 +27,7 @@ export default function NotFound() {
           </Link>
           <button
             onClick={() => window.history.back()}
-            className="w-full font-bold border border-slate-200 py-4 rounded-xl shadow-lg shadow-blue-100 flex items-center justify-center gap-2 hover:bg-slate-50 font-bold transition active:scale-95"
+            className="w-full font-bold bg-white border border-slate-200 py-4 rounded-xl shadow-lg shadow-blue-100 flex items-center justify-center gap-2 hover:bg-slate-50 font-bold transition active:scale-95"
           >
             Halaman Sebelumnya
           </button>

@@ -1,14 +1,16 @@
 "use client";
 import { useState } from "react";
 import Review from "../components/Review";
+import { useSearchParams } from "next/navigation";
 
 export default function RatingUlasan() {
+  const searchParams = useSearchParams();
+  const tkn = searchParams.get("tkn");
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [review, setReview] = useState("");
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState(tkn || "");
   const [nama, setNama] = useState("");
-
   return (
     <>
       <section className="pt-40 py-16">
@@ -43,13 +45,7 @@ export default function RatingUlasan() {
             {/* Token Input */}
             <div className="mb-2">
               <label className="block text-xs font-semibold text-slate-600 mb-1">Token (WAJIB)</label>
-              <input
-                type="text"
-                placeholder="Nama lengkap"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                value={token}
-                onChange={(e) => setToken(e.target.value)}
-              />
+              <input type="text" placeholder="BOY-UZAYL" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" value={token} onChange={(e) => setToken(e.target.value)} />
             </div>
 
             {/* Nama Input */}

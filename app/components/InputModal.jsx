@@ -29,7 +29,8 @@ function InputModal({ isOpen, onClose, product, onSuccess }) {
     const target = e.target;
     const nomor = target.nomorWA.value.trim();
     const cookie = target.cookie.value;
-    const cookieText = target.cookie.selectedOptions[0].text;
+    const textTumbal = target.cookie.selectedOptions[0].text;
+    const cookieText = textTumbal.split(" ")[0];
 
     let wa = "0" + nomor.replace(/\D/g, "");
 
@@ -48,6 +49,7 @@ function InputModal({ isOpen, onClose, product, onSuccess }) {
       localStorage.setItem("last_trx", JSON.stringify(trx));
       window.dispatchEvent(new Event("trx-created"));
 
+      setLoading(false);
       onSuccess(trx); // 🔥 KUNCI
     } catch {
       setLoading(false);
