@@ -45,18 +45,6 @@ export async function POST(req: Request) {
       komentar: komentar || "",
       createdAt: new Date().toISOString(),
     };
-    const uRess = await fetch(`https://mahalbos.olimdipo.my.id/tokenActive/${hasilCek.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ ulasan }),
-      signal: controller.signal,
-    });
-
-    if (!uRess.ok) {
-      return NextResponse.json({ error: "Gagal memberi ulasan, silahkan coba lagi!" }, { status: 500 });
-    }
 
     const simpan = await fetch(`https://statusakun.olimdipo.my.id/ulasan`, {
       method: "POST",
@@ -68,6 +56,18 @@ export async function POST(req: Request) {
     });
 
     if (!simpan.ok) {
+      return NextResponse.json({ error: "Gagal memberi ulasan, silahkan coba lagi!" }, { status: 500 });
+    }
+    const uRess = await fetch(`https://mahalbos.olimdipo.my.id/tokenActive/${hasilCek.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ulasan }),
+      signal: controller.signal,
+    });
+
+    if (!uRess.ok) {
       return NextResponse.json({ error: "Gagal memberi ulasan, silahkan coba lagi!" }, { status: 500 });
     }
 

@@ -3,9 +3,7 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 export default function Pesanan({ onSubmit, loading }) {
-  const searchParams = useSearchParams();
-  const tkn = searchParams.get("tkn");
-  const [token, setToken] = useState(tkn || "");
+  const [token, setToken] = useState("");
 
   return (
     <>

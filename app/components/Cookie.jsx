@@ -5,9 +5,7 @@ import AkunDropDown from "./AkunDropDown";
 import { statusAkun } from "../lib/api";
 
 export default function Cookie({ onSubmit, loading }) {
-  const searchParams = useSearchParams();
-  const tkn = searchParams.get("tkn");
-  const [token, setToken] = useState(tkn || "");
+  const [token, setToken] = useState("");
   const [akun, setAkun] = useState(null);
   const [cookie, setCookie] = useState("");
 
