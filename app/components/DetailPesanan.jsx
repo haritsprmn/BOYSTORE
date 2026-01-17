@@ -43,7 +43,7 @@ export default function DetailPesanan({ data }) {
                 <span className="text-sm font-semibold text-slate-800">{ulasan.nama}</span>
                 <StarRating star={ulasan.star} />
               </div>
-              <p className="text-sm text-slate-600 italic">“{ulasan.komentar}”</p>
+              <p className="text-sm text-slate-600 italic">{ulasan.komentar ? `“${ulasan.komentar}”` : ""}</p>
             </InfoBlock>
           )}
 

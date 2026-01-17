@@ -1,0 +1,26 @@
+[
+  {
+    "question": "Apa itu BOYHACK?",
+    "answer": "BOYHACK adalah tools cheat untuk menjawab secara otomatis dengan keakuratan 100%."
+  },
+  {
+    "question": "Bagaimana cara melakukan pembayaran?",
+    "answer": "Anda cukup scan QRIS yang muncul di halaman pembayaran menggunakan aplikasi e-wallet atau mobile banking Anda."
+  },
+  {
+    "question": "Berapa lama batas waktu pembayaran?",
+    "answer": "Setiap transaksi memiliki batas waktu yang tertera di halaman pembayaran. Jika melewati batas waktu, transaksi akan otomatis dibatalkan."
+  },
+  {
+    "question": "Bagaimana jika pembayaran sudah dilakukan tapi status belum berubah?",
+    "answer": "Silakan klik tombol “Cek Status Pembayaran”. Jika masih bermasalah, hubungi tim support kami."
+  },
+  {
+    "question": "Apakah BOYHACK aman?",
+    "answer": "Ya, BOYHACK mampu menembus anti-cheat milik quizizz."
+  },
+  {
+    "question": "Apaitu cookie?",
+    "answer": "Cookie hanyalah formalitas, anda tidak perlu khawatif untuk memilih random."
+  }
+]

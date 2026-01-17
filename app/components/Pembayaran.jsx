@@ -7,13 +7,18 @@ import Link from "next/link";
 import QRCode from "qrcode";
 import Image from "next/image";
 import Alert from "./Alert";
+import Countdown from "./Countdown";
+import { Sankofa_Display } from "next/font/google";
 
 function Pembayaran({ data, show, onClose }) {
+  const imghr = process.env.NEXT_PUBLIC_IMGHR;
+  // console.log(imghr);
   const [loading, setLoading] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [warna, setWarna] = useState(true);
   const [alertMessage, setAlertMessage] = useState("");
   const [qrSrc, setQrSrc] = useState("/blank.png");
+  const [expired, setExpired] = useState(false);
 
   // --- Cek Status ---
   const [status, setStatus] = useState(data);
@@ -48,6 +53,36 @@ function Pembayaran({ data, show, onClose }) {
       setLoading(false);
 
       // ⛔ JANGAN reload
+    }
+  }
+  async function hapus(trxid) {
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ trxid }),
+      });
+
+      const result = await res.json();
+
+      if (result.success === true) {
+        localStorage.removeItem("last_trx");
+        window.dispatchEvent(new Event("trx-deleted"));
+        setVisible(false);
+        onClose?.();
+        return;
+      }
+      setWarna(false);
+      setAlertMessage(result?.error || "Gagal cek status, coba lagi");
+      setShowAlert(true);
+    } catch (err) {
+      setWarna(false);
+      setAlertMessage(err.message || "Gagal cek status, coba lagi");
+      setShowAlert(true);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -110,6 +145,90 @@ function Pembayaran({ data, show, onClose }) {
     Paket = "Bulanan";
   } else {
     Paket = "-";
+  }
+
+  const Jembot = currentData?.pembayaran?.status;
+
+  let statusBadge = null;
+  let imgBadge = null;
+  let buttonBadge = null;
+
+  if (expired) {
+    buttonBadge = (
+      <button
+        onClick={() => hapus(currentData.pembayaran.TRXID)}
+        disabled={loading}
+        type="submit"
+        className="w-full btn-gradient-red text-white text-center font-bold py-3.5 rounded-xl shadow-lg shadow-blue-200/50 flex items-center justify-center gap-2 transition-transform active:scale-95"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24">
+          <path fill="currentColor" d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6z"></path>
+        </svg>
+        {loading ? "Memproses..." : "Hapus Transaksi"}
+      </button>
+    );
+  } else if (Jembot === "completed") {
+    buttonBadge = (
+      <Link
+        href={`/rating?token=${currentData?.pesanan?.token}`}
+        type="submit"
+        className="w-full btn-gradient-yellow text-white text-center font-bold py-3.5 rounded-xl shadow-lg shadow-blue-200/50 flex items-center justify-center gap-2 transition-transform active:scale-95"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24">
+          <path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21z"></path>
+        </svg>
+        Beri Penilaian
+      </Link>
+    );
+  } else if (Jembot === "EXPIRED") {
+    buttonBadge = (
+      <button
+        onClick={() => hapus(currentData.pembayaran.TRXID)}
+        disabled={loading}
+        type="submit"
+        className="w-full btn-gradient-red text-white text-center font-bold py-3.5 rounded-xl shadow-lg shadow-blue-200/50 flex items-center justify-center gap-2 transition-transform active:scale-95"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24">
+          <path fill="currentColor" d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6z"></path>
+        </svg>
+        {loading ? "Memproses..." : "Hapus Transaksi"}
+      </button>
+    );
+  } else if (Jembot === "pending") {
+    buttonBadge = (
+      <button
+        onClick={() => cekStatus(currentData.pembayaran.TRXID)}
+        disabled={loading}
+        type="submit"
+        className="w-full btn-gradient text-white text-center font-bold py-3.5 rounded-xl shadow-lg shadow-blue-200/50 flex items-center justify-center gap-2 transition-transform active:scale-95"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:refresh-circle-bold" className="iconify text-xl iconify--solar">
+          <path
+            fill="currentColor"
+            fillRule="evenodd"
+            d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12S6.477 2 12 2s10 4.477 10 10m-16.54-.917a6.59 6.59 0 0 1 6.55-5.833a6.59 6.59 0 0 1 5.242 2.592a.75.75 0 0 1-1.192.911a5.09 5.09 0 0 0-4.05-2.003a5.09 5.09 0 0 0-5.037 4.333h.364a.75.75 0 0 1 .53 1.281l-1.169 1.167a.75.75 0 0 1-1.06 0L4.47 12.364a.75.75 0 0 1 .53-1.28zm12.902-.614a.75.75 0 0 0-1.06 0l-1.168 1.167a.75.75 0 0 0 .53 1.28h.363a5.09 5.09 0 0 1-5.036 4.334a5.08 5.08 0 0 1-4.038-1.986a.75.75 0 0 0-1.188.916a6.58 6.58 0 0 0 5.226 2.57a6.59 6.59 0 0 0 6.549-5.833H19a.75.75 0 0 0 .53-1.281z"
+            clipRule="evenodd"
+          ></path>
+        </svg>
+        {loading ? "Memproses..." : "Cek Status Pembayaran"}
+      </button>
+    );
+  }
+
+  if (expired) {
+    imgBadge = <Image src={imghr} alt="QR Pembayaran" width={192} height={192} className="object-contain rounded-lg mx-auto" />;
+  } else {
+    imgBadge = <Image src={qrSrc} alt="QR Pembayaran" width={192} height={192} className="object-contain rounded-lg mx-auto" />;
+  }
+
+  if (expired) {
+    statusBadge = <span className="text-xs text-red-500 font-bold bg-red-50 px-2 py-1 rounded-md">EXPIRED</span>;
+  } else if (Jembot === "completed") {
+    statusBadge = <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded-md">COMPLETED</span>;
+  } else if (Jembot === "EXPIRED") {
+    statusBadge = <span className="text-xs text-red-500 font-bold bg-red-50 px-2 py-1 rounded-md">EXPIRED</span>;
+  } else if (Jembot === "pending") {
+    statusBadge = <span className="text-xs text-amber-500 font-bold bg-amber-50 px-2 py-1 rounded-md">PENDING</span>;
   }
 
   if (!visible) return null;
@@ -185,14 +304,22 @@ function Pembayaran({ data, show, onClose }) {
                     Selesaikan dalam
                   </span>
                   <span id="countdown" className="font-bold font-mono text-base">
-                    <Count targetTime={currentData.pembayaran.expired} />
+                    {/* <Count targetTime={currentData.pembayaran.expired} onExpire={() => setExpired(true)} /> */}
+                    <Countdown
+                      targetTime={currentData.pembayaran.expired}
+                      onExpire={() => {
+                        setExpired(true);
+                        console.log("EXPIRED DIPANGGIL: " + expired);
+                      }}
+                    />
                   </span>
                 </div>
               )}
 
               {/* <!-- QR Code Frame --> */}
               <div className="relative p-4 bg-white rounded-2xl border-2 border-dashed border-blue-400 shadow-sm mb-6 group hover:border-slate-200 transition-colors">
-                <Image src={qrSrc} alt="QR Pembayaran" width={192} height={192} className="object-contain rounded-lg mx-auto" />
+                {imgBadge}
+                {/* <Image src={qrSrc} alt="QR Pembayaran" width={192} height={192} className="object-contain rounded-lg mx-auto" /> */}
                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white px-3 py-1 rounded-full border border-blue-400 shadow-sm flex items-center gap-1">
                   <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:qr-code-bold" className="iconify text-slate-900 iconify--solar">
                     <path
@@ -242,47 +369,14 @@ function Pembayaran({ data, show, onClose }) {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-slate-500 text-xs">Status</span>
-                    {currentData?.pembayaran?.status === "pending" && <span className="text-xs text-amber-500 font-bold bg-amber-50 px-2 py-1 rounded-md">PENDING</span>}
-
-                    {currentData?.pembayaran?.status === "completed" && <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded-md">COMPLETED</span>}
-
-                    {currentData?.pembayaran?.status === "EXPIRED" && <span className="text-xs text-red-500 font-bold bg-red-50 px-2 py-1 rounded-md">EXPIRED</span>}
+                    {statusBadge}
                   </div>
                 </div>
               </div>
 
               {/* <!-- Action Buttons --> */}
               <div className="w-full space-y-3">
-                {currentData?.pembayaran?.status != "completed" && (
-                  <button
-                    onClick={() => cekStatus(currentData.pembayaran.TRXID)}
-                    disabled={loading}
-                    type="submit"
-                    className="w-full btn-gradient text-white text-center font-bold py-3.5 rounded-xl shadow-lg shadow-blue-200/50 flex items-center justify-center gap-2 transition-transform active:scale-95"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:refresh-circle-bold" className="iconify text-xl iconify--solar">
-                      <path
-                        fill="currentColor"
-                        fillRule="evenodd"
-                        d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12S6.477 2 12 2s10 4.477 10 10m-16.54-.917a6.59 6.59 0 0 1 6.55-5.833a6.59 6.59 0 0 1 5.242 2.592a.75.75 0 0 1-1.192.911a5.09 5.09 0 0 0-4.05-2.003a5.09 5.09 0 0 0-5.037 4.333h.364a.75.75 0 0 1 .53 1.281l-1.169 1.167a.75.75 0 0 1-1.06 0L4.47 12.364a.75.75 0 0 1 .53-1.28zm12.902-.614a.75.75 0 0 0-1.06 0l-1.168 1.167a.75.75 0 0 0 .53 1.28h.363a5.09 5.09 0 0 1-5.036 4.334a5.08 5.08 0 0 1-4.038-1.986a.75.75 0 0 0-1.188.916a6.58 6.58 0 0 0 5.226 2.57a6.59 6.59 0 0 0 6.549-5.833H19a.75.75 0 0 0 .53-1.281z"
-                        clipRule="evenodd"
-                      ></path>
-                    </svg>
-                    {loading ? "Memproses..." : "Cek Status Pembayaran"}
-                  </button>
-                )}
-                {currentData?.pembayaran?.status == "completed" && (
-                  <Link
-                    href={`/rating?tkn=${currentData?.pesanan?.token}`}
-                    type="submit"
-                    className="w-full btn-gradient-yellow text-white text-center font-bold py-3.5 rounded-xl shadow-lg shadow-blue-200/50 flex items-center justify-center gap-2 transition-transform active:scale-95"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24">
-                      <path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21z"></path>
-                    </svg>
-                    Beri Penilaian
-                  </Link>
-                )}
+                {buttonBadge}
                 <Link
                   href={`/detail?trx=${currentData.pembayaran.TRXID}`}
                   className="w-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-200 text-center font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2"

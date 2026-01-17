@@ -15,6 +15,8 @@ export async function POST(req: NextRequest) {
     const cek = await fetch(`https://statusakun.olimdipo.my.id/updatecek/${token}`);
     const hasilCek = await cek.json();
 
+    if (hasilCek.error) return Response.json({ error: `${token} Tidak Ditemukan` }, { status: 500 });
+
     const uRess = await fetch(`https://mahalbos.olimdipo.my.id/tokenActive/${hasilCek.id}`, {
       method: "PATCH",
       headers: {

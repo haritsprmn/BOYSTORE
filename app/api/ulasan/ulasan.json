@@ -1,0 +1,12 @@
+[
+  { "name": "Andi", "star": 5, "komentar": "Pelayanannya cepat dan ramah 👍" },
+  { "name": "Budi", "star": 4, "komentar": "Produk sesuai deskripsi, recommended!" },
+  { "name": "Siti", "star": 5, "komentar": "Pengiriman aman dan rapi" },
+  { "name": "Rina", "star": 5, "komentar": "Harga murah kualitas oke 🔥" },
+  { "name": "Dewi", "star": 4, "komentar": "Admin fast respon, sangat membantu" },
+  { "name": "Rizky", "star": 5, "komentar": "Packing rapi, barang aman sampai tujuan" },
+  { "name": "Putra", "star": 4, "komentar": "Kualitas produk bagus untuk harganya" },
+  { "name": "Ayu", "star": 5, "komentar": "Sudah order dua kali, selalu puas" },
+  { "name": "Fajar", "star": 5, "komentar": "Pengiriman lebih cepat dari estimasi" },
+  { "name": "Nisa", "star": 5, "komentar": "Barang original dan sesuai foto" }
+]

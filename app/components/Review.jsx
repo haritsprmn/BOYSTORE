@@ -1,19 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-
-const reviews = [
-  { name: "Andi", star: 5, text: "Pelayanannya cepat dan ramah 👍" },
-  { name: "Budi", star: 4, text: "Produk sesuai deskripsi, recommended!" },
-  { name: "Siti", star: 5, text: "Pengiriman aman dan rapi" },
-  { name: "Rina", star: 5, text: "Harga murah kualitas oke 🔥" },
-  { name: "Dewi", star: 4, text: "Admin fast respon, sangat membantu" },
-  { name: "Rizky", star: 5, text: "Packing rapi, barang aman sampai tujuan" },
-  { name: "Putra", star: 4, text: "Kualitas produk bagus untuk harganya" },
-  { name: "Ayu", star: 5, text: "Sudah order dua kali, selalu puas" },
-  { name: "Fajar", star: 5, text: "Pengiriman lebih cepat dari estimasi" },
-  { name: "Nisa", star: 5, text: "Barang original dan sesuai foto" },
-];
+import reviews from "@/app/api/ulasan/ulasan.json";
 
 export default function Review({ speed = 80, arah = "left" }) {
   // speed = pixel per second
@@ -62,7 +50,7 @@ export default function Review({ speed = 80, arah = "left" }) {
               </div>
 
               {/* 💬 TEXT */}
-              <p className="italic text-sm text-slate-600">“{review.text}”</p>
+              <p className="italic text-sm text-slate-600">“{review.komentar}”</p>
 
               {/* 👤 NAME */}
               <span className="mt-2 block text-xs font-semibold text-slate-800">— {review.name}</span>

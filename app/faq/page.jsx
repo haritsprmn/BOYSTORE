@@ -1,28 +1,6 @@
 "use client";
 import { useState } from "react";
-
-const faqs = [
-  {
-    question: "Apa itu Pakasir?",
-    answer: "Pakasir adalah platform pembayaran digital yang mendukung QRIS dan berbagai metode pembayaran untuk memudahkan transaksi Anda.",
-  },
-  {
-    question: "Bagaimana cara melakukan pembayaran?",
-    answer: "Anda cukup scan QRIS yang muncul di halaman pembayaran menggunakan aplikasi e-wallet atau mobile banking Anda.",
-  },
-  {
-    question: "Berapa lama batas waktu pembayaran?",
-    answer: "Setiap transaksi memiliki batas waktu yang tertera di halaman pembayaran. Jika melewati batas waktu, transaksi akan otomatis dibatalkan.",
-  },
-  {
-    question: "Bagaimana jika pembayaran sudah dilakukan tapi status belum berubah?",
-    answer: "Silakan klik tombol “Cek Status Pembayaran”. Jika masih bermasalah, hubungi tim support kami.",
-  },
-  {
-    question: "Apakah pembayaran aman?",
-    answer: "Ya, semua transaksi diproses melalui sistem yang aman dan telah mendukung standar keamanan pembayaran digital.",
-  },
-];
+import faqs from "./faq.json";
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(null);

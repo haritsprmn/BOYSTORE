@@ -8,6 +8,7 @@ function InputModal({ isOpen, onClose, product, onSuccess }) {
   const [akun, setAkun] = useState(null);
   const [paket, setPaket] = useState("");
   const [loading, setLoading] = useState(false);
+  const [cookie, setCookie] = useState("");
 
   useEffect(() => {
     statusAkun().then((data) => setAkun(data));
@@ -108,7 +109,7 @@ function InputModal({ isOpen, onClose, product, onSuccess }) {
             </div>
 
             {/* <!-- Input Pilih Akun (Dropdown dari API) --> */}
-            <AkunDropDown akun={akun} />
+            <AkunDropDown akun={akun} value={cookie} onChange={setCookie} />
 
             <button disabled={loading} type="submit" className="w-full btn-gradient text-white font-bold py-3.5 rounded-xl shadow-lg hover:shadow-blue-200 transition-all flex justify-center items-center gap-2">
               {loading ? "Memproses..." : "Lanjut Pembayaran"}

@@ -8,6 +8,7 @@ function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [data, setData] = useState(null);
   const [trxStatus, setTrxStatus] = useState(null);
+  const [hapus, setHapus] = useState(true);
 
   useEffect(() => {
     const handler = () => {
@@ -16,6 +17,18 @@ function Navbar() {
 
     window.addEventListener("open-pembayaran", handler);
     return () => window.removeEventListener("open-pembayaran", handler);
+  }, []);
+
+  useEffect(() => {
+    const handler = () => {
+      setHapus(false);
+      setData(null);
+      setTrxStatus(null);
+      setOpen(false);
+    };
+
+    window.addEventListener("trx-deleted", handler);
+    return () => window.removeEventListener("trx-deleted", handler);
   }, []);
 
   useEffect(() => {
@@ -136,7 +149,7 @@ function Navbar() {
             )}
 
             {/* <!-- Resume Button --> */}
-            {hasLastTrx && trxStatus !== "completed" && (
+            {hapus && hasLastTrx && trxStatus !== "completed" && (
               <button id="resumeBtn" onClick={() => setOpen(true)} className="none px-4 py-2 bg-amber-100 text-amber-700 rounded-full text-sm font-bold hover:bg-amber-200 transition-colors flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:history-bold" className="iconify animate-pulse iconify--solar">
                   <path
@@ -149,7 +162,7 @@ function Navbar() {
                 Lanjutkan Transaksi
               </button>
             )}
-            {hasLastTrx && trxStatus === "completed" && (
+            {hapus && hasLastTrx && trxStatus === "completed" && (
               <button id="resumeBtn" onClick={() => setOpen(true)} className="none px-4 py-2 bg-sky-100 text-sky-700 rounded-full text-sm font-bold hover:bg-sky-200 transition-colors flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:history-bold" className="iconify animate-pulse iconify--solar">
                   <path
