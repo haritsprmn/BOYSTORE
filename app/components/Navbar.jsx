@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Pembayaran from "@/app/components/Pembayaran";
+import Link from "next/link";
 
 function Navbar() {
   const [hasLastTrx, setHasLastTrx] = useState(false);
@@ -132,15 +133,18 @@ function Navbar() {
             {isMobileMenuOpen && (
               <div className="sm:hidden glass-nav absolute top-20 left-0 w-full animate-slide-down-soft">
                 <div className="flex flex-col p-4 gap-3">
-                  <button onClick={() => setIsMobileMenuOpen(false)} className="w-full px-4 py-3 bg-slate-100 rounded-xl text-slate-600">
-                    Status Pembayaran
-                  </button>
-                  <button onClick={() => setIsMobileMenuOpen(false)} className="w-full px-4 py-3 bg-slate-100 rounded-xl text-slate-600">
+                  <Link href={"/"} onClick={() => setIsMobileMenuOpen(false)} className="w-full px-4 py-3 bg-slate-100 rounded-xl text-slate-600">
+                    Order
+                  </Link>
+                  <Link href={"/pesanan"} onClick={() => setIsMobileMenuOpen(false)} className="w-full px-4 py-3 bg-slate-100 rounded-xl text-slate-600">
+                    Cek Pesanan
+                  </Link>
+                  <Link href={"/cookie"} onClick={() => setIsMobileMenuOpen(false)} className="w-full px-4 py-3 bg-slate-100 rounded-xl text-slate-600">
                     Update Cookie
-                  </button>
-                  <button onClick={() => setIsMobileMenuOpen(false)} className="w-full px-4 py-3 bg-slate-100 rounded-xl text-slate-600">
+                  </Link>
+                  <Link href={"/tutorial"} onClick={() => setIsMobileMenuOpen(false)} className="w-full px-4 py-3 bg-slate-100 rounded-xl text-slate-600">
                     Tutorial
-                  </button>
+                  </Link>
                   <button onClick={() => setIsMobileMenuOpen(false)} className="w-full px-4 py-3 bg-slate-100 rounded-xl text-slate-600">
                     ✖ Tutup
                   </button>
