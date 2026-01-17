@@ -3,12 +3,44 @@
 import { useEffect, useState } from "react";
 import AkunDropDown from "./AkunDropDown";
 import { statusAkun } from "../lib/api";
+import Alert from "./Alert";
 
 function InputModal({ isOpen, onClose, product, onSuccess }) {
   const [akun, setAkun] = useState(null);
   const [paket, setPaket] = useState("");
   const [loading, setLoading] = useState(false);
   const [cookie, setCookie] = useState("");
+  const [cfToken, setCfToken] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [warna, setWarna] = useState(true);
+  const [alertMessage, setAlertMessage] = useState("");
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const loadTurnstile = () => {
+      if (!window.turnstile) return;
+
+      window.turnstile.render("#cf-turnstile", {
+        sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+        callback: (token) => {
+          setCfToken(token);
+        },
+        theme: "light",
+      });
+    };
+
+    if (!window.turnstile) {
+      const script = document.createElement("script");
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+      script.async = true;
+      script.defer = true;
+      script.onload = loadTurnstile;
+      document.body.appendChild(script);
+    } else {
+      loadTurnstile();
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     statusAkun().then((data) => setAkun(data));
@@ -25,6 +57,10 @@ function InputModal({ isOpen, onClose, product, onSuccess }) {
   if (!isOpen) return null;
   async function handleSubmit(e) {
     e.preventDefault();
+    if (!cfToken) {
+      alert("Verifikasi keamanan belum selesai");
+      return;
+    }
     setLoading(true);
 
     const target = e.target;
@@ -44,9 +80,18 @@ function InputModal({ isOpen, onClose, product, onSuccess }) {
           durasi: paket,
           cookie,
           cookieText,
+          cfToken,
         }),
       });
       const trx = await res.json();
+      if (trx.error) {
+        setWarna(false);
+        setAlertMessage(trx?.error || "Kamu teridentifikasi Robot");
+        setShowAlert(true);
+        setLoading(false);
+
+        return;
+      }
       localStorage.setItem("last_trx", JSON.stringify(trx));
       window.dispatchEvent(new Event("trx-created"));
 
@@ -111,7 +156,13 @@ function InputModal({ isOpen, onClose, product, onSuccess }) {
             {/* <!-- Input Pilih Akun (Dropdown dari API) --> */}
             <AkunDropDown akun={akun} value={cookie} onChange={setCookie} />
 
-            <button disabled={loading} type="submit" className="w-full btn-gradient text-white font-bold py-3.5 rounded-xl shadow-lg hover:shadow-blue-200 transition-all flex justify-center items-center gap-2">
+            <div id="cf-turnstile" className="my-4 flex justify-center"></div>
+
+            <button
+              disabled={loading || !cfToken}
+              className={`w-full btn-gradient ${!cfToken ? "opacity-50 cursor-not-allowed" : ""} text-white font-bold py-3.5 rounded-xl shadow-lg hover:shadow-blue-200 transition-all flex justify-center items-center gap-2`}
+              type="submit"
+            >
               {loading ? "Memproses..." : "Lanjut Pembayaran"}
               <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 24 24" data-icon="solar:card-send-bold" className="iconify iconify--solar">
                 <path fill="currentColor" fillRule="evenodd" d="M18.47 13.47a.75.75 0 0 1 1.06 0l2 2a.75.75 0 1 1-1.06 1.06l-.72-.72V20a.75.75 0 0 1-1.5 0v-4.19l-.72.72a.75.75 0 1 1-1.06-1.06z" clipRule="evenodd"></path>
@@ -127,6 +178,7 @@ function InputModal({ isOpen, onClose, product, onSuccess }) {
           </form>
         </div>
       </div>
+      <Alert show={showAlert} warna={warna} onClose={() => setShowAlert(false)} message={alertMessage} />
     </>
   );
 }

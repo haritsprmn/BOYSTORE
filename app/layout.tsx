@@ -28,6 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased text-slate-600 selection:bg-blue-100 selection:text-blue-900`}>
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
         <Background />
         <Navbar />
         {children}
