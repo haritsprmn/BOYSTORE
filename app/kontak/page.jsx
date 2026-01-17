@@ -16,7 +16,14 @@ export default function Kontak() {
     setLoading(true);
 
     try {
-      const res = await fetch("https://statusakun.olimdipo.my.id/bot/wa", {
+      if (pesan.length > 100) {
+        setWarna(false);
+        setAlertMessage("pesan terlalu panjang");
+        setShowAlert(true);
+        return;
+      }
+
+      const res = await fetch("https://statusakun.olimdipo.my.id/wa", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -37,7 +44,6 @@ export default function Kontak() {
       setEmail("");
       setPesan("");
     } catch (err) {
-      alert("Pesan berhasil dikirim ✅");
       setWarna(false);
       setAlertMessage("Pesan gagal dikirim");
       setShowAlert(true);

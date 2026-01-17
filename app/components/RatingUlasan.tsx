@@ -71,7 +71,7 @@ export default function RatingUlasan({ onSuccess, data }: Props) {
 
   return (
     <>
-      <section className="pt-40 py-16">
+      <section className="pt-20 py-16">
         <Review speed={90} arah="right" />
         <div className="max-w-xl mx-auto px-6">
           <div className="bg-slate-50 border border-slate-100 rounded-3xl p-8 shadow-sm">

@@ -1,18 +1,25 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import reviews from "@/app/api/ulasan/ulasan.json";
+import TimeID from "./TimeID";
 
 export default function Review({ speed = 80, arah = "left" }) {
   // speed = pixel per second
   const trackRef = useRef(null);
   const [duration, setDuration] = useState(0);
+  const [reviews, setReviews] = useState([]);
 
-  const duplicatedReviews = useMemo(() => [...reviews, ...reviews], []);
+  useEffect(() => {
+    fetch("/api/dataulasan", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data) => setReviews(data));
+  }, []);
+
+  const duplicatedReviews = useMemo(() => [...reviews, ...reviews], [reviews]);
 
   useEffect(() => {
     const track = trackRef.current;
-    if (!track) return;
+    if (!track || duplicatedReviews.length === 0) return;
 
     const halfWidth = track.scrollWidth / 2;
     const calculatedDuration = halfWidth / speed;
@@ -20,14 +27,13 @@ export default function Review({ speed = 80, arah = "left" }) {
     if (arah === "right") {
       track.style.setProperty("--start-x", `-${halfWidth}px`);
       track.style.setProperty("--end-x", "0px");
-      track.style.setProperty("--scroll-distance", `${halfWidth}px`);
     } else {
       track.style.setProperty("--start-x", "0px");
       track.style.setProperty("--end-x", `-${halfWidth}px`);
-      track.style.setProperty("--scroll-distance", `-${halfWidth}px`);
     }
+
     setDuration(calculatedDuration);
-  }, [speed]);
+  }, [speed, arah, duplicatedReviews]);
 
   return (
     <>
@@ -53,7 +59,13 @@ export default function Review({ speed = 80, arah = "left" }) {
               <p className="italic text-sm text-slate-600">“{review.komentar}”</p>
 
               {/* 👤 NAME */}
-              <span className="mt-2 block text-xs font-semibold text-slate-800">— {review.name}</span>
+              <div className="mt-2 flex items-center justify-between gap-2">
+                <span className="text-xs font-semibold text-slate-800 truncate">— {review.name}</span>
+
+                <span className="text-[11px] text-slate-400 whitespace-nowrap">
+                  <TimeID ts={review.createdAt} />
+                </span>
+              </div>
             </div>
           ))}
         </div>
